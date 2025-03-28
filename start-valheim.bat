@@ -3,25 +3,30 @@ chcp 65001 >nul  :: Enable UTF-8 encoding for emojis
 setlocal enabledelayedexpansion
 
 :: Set world name (CHANGE THIS)
-set WORLD_NAME=YourWorldName
+set WORLD_NAME=RumahBaru
 
 :: Set paths (CHANGE Username in SAVE_PATH and set BACKUP_PATH)
-set SAVE_PATH=C:\Users\Username\AppData\LocalLow\IronGate\Valheim\worlds_local
+set SAVE_PATH=C:\Users\Veloxium\AppData\LocalLow\IronGate\Valheim\worlds_local
 set BACKUP_PATH=D:\Valheim\backups
 
 :: Step 1️⃣: Pull the latest backup from GitHub
 echo 🔄 Pulling latest backup from GitHub...
 cd /d "%BACKUP_PATH%"
-git pull origin main
+git pull origin main > git_pull_output.txt
 
-:: Step 2️⃣: Restore the world files to Valheim save folder
-echo 🔄 Restoring world files...
-xcopy "%BACKUP_PATH%\%WORLD_NAME%.*" "%SAVE_PATH%" /Y
+:: Check if there were any updates
+findstr /C:"Already up to date." git_pull_output.txt >nul
+if %errorlevel% == 0 (
+    echo ✅ No new updates found. Skipping restore step.
+) else (
+    echo 🔄 Updates found! Restoring world files...
+    xcopy "%BACKUP_PATH%\%WORLD_NAME%.*" "%SAVE_PATH%" /Y
+)
 
 :: Step 3️⃣: Start Valheim
 echo 🚀 Launching Valheim...
 :: Set paths to valheim.exe in your Steam folder
-start "" /d "C:\Program Files (x86)\Steam\steamapps\common\Valheim" valheim.exe
+start "" /d "D:\Program Files\Steam\steamapps\common\Valheim" valheim.exe
 
 :: Step 4️⃣: Wait for Valheim to close
 :WAIT
